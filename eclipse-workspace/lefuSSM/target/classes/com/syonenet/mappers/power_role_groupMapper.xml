@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_role_groupMapper">
+  <resultMap id="power_role_group" type="power_role_group">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_role_group">
+    insert into power_role_group (group_id, role_id)
+    values (#{groupId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="power_role_group">
+    insert into power_role_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerRoleGroupList" parameterType="Map" resultType="power_role_group">
+	select * from power_role_group where 1 = 1
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+	<if test="rightId != null and rightId != ''">and role_id = #{rightId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and roleId like concat('%',#{conditionsall},'%')
+		or rightId like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

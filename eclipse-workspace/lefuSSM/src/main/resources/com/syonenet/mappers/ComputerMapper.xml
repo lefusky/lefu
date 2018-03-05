@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.ComputerDao">
+
+	<resultMap id="ComputerMap" type="Computer">
+		<id property="computer_id" column="computer_id" />
+		<result property="computer_name"  column="computer_name" />
+		<result property="one_level_id"  column="one_level_id" />
+		<result property="one_level_name"  column="type_name" />
+		<result property="two_level_id"  column="two_level_id" />
+		<result property="two_level_name"  column="two_level_name" />
+		<result property="computer_size"  column="computer_size" />
+		<result property="computer_price"  column="computer_price" />
+		<result property="computer_color"  column="computer_color" />
+		<result property="computer_other"  column="computer_other" />
+		<result property="computer_state"  column="computer_state" />
+		<result property="add_time"  column="add_time" />
+		<!-- 图片 -->
+		<result property="picture_url1"  column="picture_url1" />
+		<result property="picture_name1"  column="picture_name1" />
+		<result property="picture_url2"  column="picture_url2" />
+		<result property="picture_name2"  column="picture_name2" />
+		<result property="picture_url3"  column="picture_url3" />
+		<result property="picture_name3"  column="picture_name3" />
+
+	</resultMap>
+	
+	<select id="findComputerList" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info 
+		JOIN two_level ON bg_computer_info.two_level_id=two_level.two_level_id
+		JOIN tbl_news_type ON bg_computer_info.one_level_id=tbl_news_type.type_id
+		
+		where 1 = 1
+		<if test="computer_id != null and computer_id != ''">
+				and computer_id = #{computer_id}
+		</if>
+		order by id desc 
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="findComputerListhtml" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1
+		<if test="price1 != null and price2 != null">
+			and computer_price between #{price1} and #{price2}
+		</if>
+		order by id desc 
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="findComputerCount" parameterType="Map" resultType="Integer">
+		select count(*) from bg_computer_info where 1 = 1
+	</select>
+	
+	
+	
+	<insert id="addComputer" parameterType="Computer" useGeneratedKeys="true" keyProperty="computer_id">
+		insert into bg_computer_info(computer_id, computer_name, one_level_id,one_level_name, two_level_id,two_level_name,computer_size ,computer_price, computer_color,computer_other,computer_state,add_time,picture_url1,picture_name1,picture_url2,picture_name2,picture_url3,picture_name3)
+		values(#{computer_id}, #{computer_name}, #{one_level_id}, (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}),#{two_level_id},(SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}), #{computer_size}, #{computer_price}, #{computer_color}, #{computer_other}, #{computer_state}, #{add_time},#{picture_url1},#{picture_name1},#{picture_url2},#{picture_name2},#{picture_url3},#{picture_name3})
+	</insert>
+	
+	<select id="findComputerByComputerId" parameterType="Integer" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_id = #{computer_id}
+	</select>
+	<select id="findPicture1ByComputerName" parameterType="String" resultMap="ComputerMap">
+		select * from bg_computer_info where picture_url1 = #{picture_url1}
+	</select>
+
+	
+	<select id="findComputersByCondition" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="two_level_id != null">
+			and two_level_id = #{two_level_id}
+		</if>
+	</select>
+	
+	
+			
+	<resultMap id="OneLevelMap" type="OneLevel">
+		<id property="one_level_id" column="type_id" />
+		<result property="one_level_name"  column="type_name" />
+	</resultMap>
+	<resultMap id="TwoLevelMap" type="TwoLevel">
+		<id property="two_level_id" column="type_id" />
+		<result property="two_level_name"  column="type_name" />
+		<result property="one_level_id"  column="type_pid" />
+	</resultMap>
+	
+	<select id="findOneLevelList" parameterType="Map" resultMap="OneLevelMap">
+		select type_id,type_name from tbl_news_type where type_pid=1 
+	</select>
+	<select id="findTwoLevelList" parameterType="Map" resultMap="TwoLevelMap">
+		select type_id,type_name,type_pid from tbl_news_type  where  type_pid!=1 and type_pid!=0
+	</select>
+	<select id="findOneLevelById" parameterType="Integer" resultMap="OneLevelMap">
+		select * from tbl_news_type where type_id = #{one_level_id}
+	</select>
+	<select id="findTwoLevelById" parameterType="Integer" resultMap="TwoLevelMap">
+		select * from tbl_news_type where type_id = #{two_level_id}
+	</select>
+	
+	
+	
+	
+	
+	<select id="findComputersByConditionToindex_1" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1
+		<if test="computer_name != null">
+			and computer_name = #{computer_name}
+		</if>
+		<if test="one_level_id != null">
+			and one_level_id = #{one_level_id}
+		</if>
+		<if test="two_level_id != null">
+			and two_level_id = #{two_level_id}
+		</if>
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	
+	
+	<update id="updateComputer" parameterType="Computer">
+		update bg_computer_info
+		<set>
+			<if test="computer_id != null and computer_id != ''">
+				computer_id = #{computer_id},
+			</if>
+			<if test="computer_name != null and computer_name != ''">
+				computer_name = #{computer_name},
+			</if>
+			<if test="one_level_id != null and one_level_id != ''">
+				one_level_id = #{one_level_id},
+				one_level_name = (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}),
+			</if>
+			<if test="two_level_id != null and two_level_id != ''">
+				two_level_id = #{two_level_id},
+				two_level_name = (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}),
+			</if>
+			<if test="computer_size != null and computer_size != ''">
+				computer_size = #{computer_size},
+			</if>
+			<if test="computer_price != null and computer_price != ''">
+				computer_price = #{computer_price},
+			</if>
+			<if test="computer_color != null and computer_color != ''">
+				computer_color = #{computer_color},
+			</if>
+			<if test="computer_other != null and computer_other != ''">
+				computer_other = #{computer_other},
+			</if>
+			<if test="computer_state != null and computer_state != ''">
+				computer_state = #{computer_state},
+			</if>
+			<if test="computer_state != null and computer_state != ''">
+				add_time = #{add_time},
+			</if>
+			<!-- 图片 -->
+			<if test="picture_url1 != null and picture_url1 != ''">
+				picture_url1 = #{picture_url1},
+			</if>
+			<if test="picture_name1 != null and picture_name1 != ''">
+				picture_name1 = #{picture_name1},
+			</if>
+			<if test="picture_url2 != null and picture_url2 != ''">
+				picture_url2 = #{picture_url2},
+			</if>
+			<if test="picture_name2 != null and picture_name2 != ''">
+				picture_name2 = #{picture_name2},
+			</if>
+			<if test="picture_url3 != null and picture_url3 != ''">
+				picture_url3 = #{picture_url3},
+			</if>
+			<if test="picture_name3 != null and picture_name3 != ''">
+				picture_name3 = #{picture_name3},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteComputer" parameterType="Integer">
+		delete from bg_computer_info where id = #{id}
+	</delete>
+	
+	<!-- 商品排序查询 一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一-->
+	<select id="sortingComputerByAll" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1 order by computer_price ASC,add_time DESC
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="sortingComputerByprice" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1 order by
+		<!-- 升序排列 -->
+		<if test="computer_price == 0">
+			computer_price ASC
+		</if>
+		<!-- 降序排列 -->
+		<if test="computer_price == 1">
+			computer_price DESC
+		</if>
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="sortingComputerBytime" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1 order by add_time DESC
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	<!-- 商品排序查询完毕 一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一-->
+	
+	
+	<!-- 各页面主搜索框搜索商品 -->
+	<select id="computerToSearch" parameterType="Map" resultMap="ComputerMap">
+		select * from bg_computer_info where computer_state = 1 
+		<!-- 模糊查询 -->
+		<if test="conditionsByAll != null">
+			and computer_name like concat('%',#{conditionsByAll},'%')
+			or computer_other like concat('%',#{conditionsByAll},'%')
+			or (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}) like concat('%',#{conditionsByAll},'%')
+			or computer_id like concat('%',#{conditionsByAll},'%')			
+			or (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}) like concat('%',#{conditionsByAll},'%')
+			
+		</if>
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	<!-- 各页面主搜索框搜索商品 完毕一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一-->
+	
+	
+	<!-- 条件查询商品总数 一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一-->
+	<select id="findComputerCounthtml" parameterType="Map" resultType="Integer">
+		select count(*) from bg_computer_info where computer_state = 1
+		<if test="price1 != null and price2 != null">
+			and computer_price between #{price1} and #{price2}
+		</if>
+		<if test="computer_name != null">
+			and computer_name = #{computer_name}
+		</if>
+		<if test="one_level_id != null">
+			and one_level_id = #{one_level_id}
+		</if>
+		<if test="two_level_id != null">
+			and two_level_id = #{two_level_id}
+		</if>
+		<!-- 模糊查询 （各页面主搜索框搜索商品）-->
+		<if test="conditionsByAll != null">
+			and computer_name like concat('%',#{conditionsByAll},'%')
+			or computer_other like concat('%',#{conditionsByAll},'%')
+			or (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}) like concat('%',#{conditionsByAll},'%')
+			or computer_id like concat('%',#{conditionsByAll},'%')			
+			or (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}) like concat('%',#{conditionsByAll},'%')
+			
+		</if>
+		<!-- 模糊查询完毕（各页面主搜索框搜索商品）-->
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	<!-- 条件查询商品总数完毕 一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一一-->
+	
+
+            
+</mapper> 

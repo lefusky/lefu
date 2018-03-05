@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_fileMapper">
+  <resultMap id="power_file" type="power_file">
+    <result column="file_id" jdbcType="INTEGER" property="fileId" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_url" jdbcType="VARCHAR" property="fileUrl" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_file">
+    insert into power_file (file_id, file_name, file_url
+      )
+    values (#{fileId,jdbcType=INTEGER}, #{fileName,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="power_file">
+    insert into power_file
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="fileId != null">
+        file_id,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="fileUrl != null">
+        file_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="fileId != null">
+        #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileUrl != null">
+        #{fileUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerFileList" parameterType="Map" resultType="power_file">
+	select * from power_file where 1 = 1
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+	<if test="rightId != null and rightId != ''">and role_id = #{rightId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and roleId like concat('%',#{conditionsall},'%')
+		or rightId like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

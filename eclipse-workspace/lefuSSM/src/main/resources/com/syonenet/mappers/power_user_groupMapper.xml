@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_user_groupMapper">
+  <resultMap id="power_user_group" type="power_user_group">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_user_group">
+    insert into power_user_group (group_id, user_id)
+    values (#{groupId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="power_user_group">
+    insert into power_user_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerUserGroupList" parameterType="Map" resultType="power_user_group">
+	select * from power_user_group where 1 = 1
+	<if test="groupId != null and groupId != ''">and group_id = #{groupId}</if>
+	<if test="userId != null and userId != ''">and user_id = #{userId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and group_id like concat('%',#{conditionsall},'%')
+		or user_id like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

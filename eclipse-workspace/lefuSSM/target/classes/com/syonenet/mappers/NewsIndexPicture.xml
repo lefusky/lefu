@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.NewsIndexPictureDao">
+
+	<resultMap id="NewsIndexPictureMap" type="NewsIndexPicture">
+		<id property="id" column="id" />
+		<result property="name"  column="name" />
+		<result property="picture_url1"  column="picture_url1" />
+		<result property="picture_name1"  column="picture_name1" />
+		<result property="add_time"  column="add_time" />
+	</resultMap>
+
+	<select id="findNewsIndexPictureList" parameterType="Map" resultMap="NewsIndexPictureMap">
+		select * from news_index_picture 
+		where 1 = 1
+		<if test="id != null and id != ''">and id = #{id}</if>
+		<if test="name != null and name != ''">and name = #{name}</if>
+		<if test="picture_url1 != null and picture_url1 != ''">and picture_url1 = #{picture_url1}</if>
+		<if test="picture_name1 != null and picture_name1 != ''">and picture_name1 = #{picture_name1}</if>
+		<if test="add_time != null">and add_time = #{add_time}</if>	
+		<!-- 模糊查询 -->
+		<if test="conditionsall != null">
+			and id like concat('%',#{conditionsall},'%')
+			or name like concat('%',#{conditionsall},'%')
+			or picture_url1 like concat('%',#{conditionsall},'%')
+			or picture_name1 like concat('%',#{conditionsall},'%')
+			or add_time like concat('%',#{add_time},'%')	
+		</if>
+		<!-- 排序 -->
+		order by 
+		<if test='sortingid == "diminishing"'>id ASC</if><!-- 升序排列 -->
+		<if test='sortingadd_time == "diminishing"'>add_time DESC</if><!-- 降序排列 -->
+	</select>
+	
+	
+	<select id="findNewsIndexPictureCount" parameterType="Map" resultType="Integer">
+		select count(*) from news_index_picture where 1 = 1
+		<if test="id != null and id != ''">and id = #{id}</if>
+		<if test="name != null and name != ''">and name = #{name}</if>
+		<if test="picture_url1 != null and picture_url1 != ''">and picture_url1 = #{picture_url1}</if>
+		<if test="picture_name1 != null and picture_name1 != ''">and picture_name1 = #{picture_name1}</if>
+		<if test="add_time != null">and add_time = #{add_time}</if>	
+		<!-- 模糊查询 -->
+		<if test="conditionsall != null">
+			and type like concat('%',#{conditionsall},'%')
+			or name like concat('%',#{conditionsall},'%')
+			or picture_url1 like concat('%',#{conditionsall},'%')	
+			or picture_name1 like concat('%',#{conditionsall},'%')
+			or add_time like concat('%',#{conditionsall},'%')
+		</if>
+	</select>
+	
+	
+	<update id="updateNewsIndexPicture" parameterType="NewsIndexPicture">
+		update news_index_picture
+		<set>
+			<if test="name != null and name != ''">name = #{name},</if>
+			<if test="picture_url1 != null and picture_url1 != ''">picture_url1 = #{picture_url1},</if>
+			<if test="picture_name1 != null and picture_name1 != ''">picture_name1 = #{picture_name1},</if>
+			<if test="add_time != null">add_time = #{add_time},</if>	
+		</set>
+		where id=#{id}
+	</update>
+		
+	
+	<delete id="deleteNewsIndexPicture" parameterType="Integer">
+		delete from news_index_picture where id = #{id}
+	</delete>
+	
+		
+	<insert id="addNewsIndexPicture" parameterType="NewsIndexPicture" useGeneratedKeys="true" keyProperty="id">
+		insert into news_index_picture
+			  (  id,   name,   picture_url1,   picture_name1,   add_time)
+		values(#{id},#{name},#{picture_url1},#{picture_name1},#{add_time})
+	</insert>
+</mapper> 

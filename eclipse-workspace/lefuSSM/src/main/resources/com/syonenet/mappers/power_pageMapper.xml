@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_pageMapper">
+  <resultMap id="power_page" type="power_page">
+    <result column="page_id" jdbcType="INTEGER" property="pageId" />
+    <result column="page_code" jdbcType="VARCHAR" property="pageCode" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_page">
+    insert into power_page (page_id, page_code)
+    values (#{pageId,jdbcType=INTEGER}, #{pageCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="power_page">
+    insert into power_page
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="pageId != null">
+        page_id,
+      </if>
+      <if test="pageCode != null">
+        page_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="pageId != null">
+        #{pageId,jdbcType=INTEGER},
+      </if>
+      <if test="pageCode != null">
+        #{pageCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerPageList" parameterType="Map" resultType="power_page">
+	select * from power_page where 1 = 1
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+	<if test="rightId != null and rightId != ''">and role_id = #{rightId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and roleId like concat('%',#{conditionsall},'%')
+		or rightId like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

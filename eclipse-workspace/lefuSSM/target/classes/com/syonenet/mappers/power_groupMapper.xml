@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_groupMapper">
+  <resultMap id="power_group" type="power_group">
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+    <result column="group_pid" jdbcType="VARCHAR" property="groupPid" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_group">
+    insert into power_group (group_id, group_name, group_pid
+      )
+    values (#{groupId,jdbcType=INTEGER}, #{groupName,jdbcType=VARCHAR}, #{groupPid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="power_group">
+    insert into power_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="groupName != null">
+        group_name,
+      </if>
+      <if test="groupPid != null">
+        group_pid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="groupName != null">
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupPid != null">
+        #{groupPid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerGroupList" parameterType="Map" resultType="power_group">
+	select * from power_group where 1 = 1
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+	<if test="rightId != null and rightId != ''">and role_id = #{rightId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and roleId like concat('%',#{conditionsall},'%')
+		or rightId like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

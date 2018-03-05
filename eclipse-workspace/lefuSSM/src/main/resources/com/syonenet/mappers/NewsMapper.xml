@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.NewsDao">
+
+	<resultMap id="NewsMap" type="News">
+		<id property="newsId" column="news_id" />
+		<result property="newsTitle"  column="news_title" />
+		<result property="newsPic"  column="news_pic" />
+		<result property="typePid"  column="type_pid" />
+		<result property="typeId"  column="type_id" />
+		<result property="typeName"  column="type_name" />
+		<result property="newsContent"  column="news_content" />
+		<result property="newsCount"  column="news_count" />
+		<result property="addTime"  column="add_time" />
+		<result property="addDate"  column="add_date" />
+		<result property="userId"  column="user_id" />
+		<result property="userNick"  column="user_nick" />
+		<result property="departmentId"  column="department_id" />
+		<result property="statusId"  column="status_id" />
+		<result property="topId"  column="top_id" />
+		<result property="newsRed"  column="news_red" />
+		<result property="fileName"  column="file_name" />
+		<result property="numberName"  column="number_name" />
+		<result property="numberTime"  column="number_time" />
+		<result property="specificNumber"  column="specific_number" />
+		<result property="isJump"  column="is_jump" />
+		<result property="jumpUrl"  column="jump_url" />
+		<result property="sortId"  column="sort_id" />
+	</resultMap>
+	
+	<select id="findNewsList" parameterType="Map" resultMap="NewsMap">
+		select * from tbl_news where 1 = 1
+		<if test="typePid != null and typePid != ''">
+			and type_pid = #{typePid}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			and type_id = #{typeId}
+		</if>
+		<if test="userId != null and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+		<if test="statusId != null and statusId != ''">
+			and status_id = #{statusId}
+		</if>
+		<if test="newsTitle != null">
+			and news_title  like concat('%', #{newsTitle}, '%')
+		</if>
+		<if test="typeList != null">
+			and type_id in
+			<foreach collection="typeList" item="type" index="index" open="("  separator="," close=")">  
+				(#{type.typeId})  
+			</foreach> 
+		</if>
+		<if test="newsId != null">
+			and news_id = #{newsId}
+		</if>
+		order by
+		<if test="sortId != null">
+		 	sort_id desc, 
+		 </if>
+		<if test="topId != null">
+		 	top_id desc, 
+		 </if>
+		 news_id desc
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="findNewsCount" parameterType="Map" resultType="Integer">
+		select count(*) from tbl_news where 1 = 1
+		<if test="typePid != null and typePid != ''">
+			and type_pid = #{typePid}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			and type_id = #{typeId}
+		</if>
+		<if test="userId != null and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+		<if test="statusId != null and statusId != ''">
+			and status_id = #{statusId}
+		</if>
+		<if test="newsTitle != null">
+			and news_title  like concat('%', #{newsTitle}, '%')
+		</if>
+		<if test="typeList != null">
+			and type_id in
+			<foreach collection="typeList" item="type" index="index" open="("  separator="," close=")">  
+				(#{type.typeId})  
+			</foreach> 
+		</if>
+	</select>
+	
+	<select id="findNewsById" parameterType="Integer" resultMap="NewsMap">
+		select * from tbl_news where news_id = #{newsId}
+	</select>
+	
+	<select id="findNewsByCondition" parameterType="Map" resultMap="NewsMap">
+		select * from tbl_news where 1 = 1
+		<if test="newsId != null">
+			and news_id = #{newsId}
+		</if>
+		<if test="userId != null">
+			and uesr_id = #{userId}
+		</if>
+		<if test="typeId != null">
+			and type_id = #{typeId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+	</select>
+	
+	<insert id="addNews" parameterType="News">
+		insert into tbl_news (news_pic, news_title, type_pid, type_id, type_name, news_content, add_time, add_date, user_id, user_nick, department_id, top_id, news_red, file_name, number_name, number_time, specific_number, is_jump, jump_url) 
+		values(#{newsPic}, #{newsTitle}, #{typePid}, #{typeId}, (SELECT type_name FROM tbl_news_type WHERE type_id=#{typeId}), #{newsContent}, #{addTime}, #{addDate}, #{userId}, #{userNick}, #{departmentId}, #{topId}, #{newsRed}, #{fileName}, #{numberName}, #{numberTime}, #{specificNumber}, #{isJump}, #{jumpUrl})
+	</insert>
+
+	<update id="updateNews" parameterType="News">
+		update tbl_news
+		<set>
+			<if test="newsPic != null">
+				news_pic = #{newsPic},
+			</if>
+			<if test="newsTitle != null">
+				news_title = #{newsTitle},
+			</if>
+			<if test="typePid != null">
+				type_pid = #{typePid},
+			</if>
+			<if test="typeId != null">
+				type_id = #{typeId},
+				type_name = (SELECT type_name FROM tbl_news_type WHERE type_id=#{typeId}),
+			</if>
+			<if test="newsContent != null">
+				news_content = #{newsContent},
+			</if>
+			<if test="newsCount != null">
+				news_count = #{newsCount},
+			</if>
+			<if test="statusId != null">
+				status_id = #{statusId},
+			</if>
+			<if test="topId != null">
+				top_id = #{topId},
+			</if>
+			<if test="newsRed != null">
+				news_red = #{newsRed},
+			</if>
+			<if test="fileName != null">
+				number_name = #{fileName},
+			</if>
+			<if test="numberName != null">
+				number_name = #{numberName},
+			</if>
+			<if test="numberTime != null">
+				number_time = #{numberTime},
+			</if>
+			<if test="specificNumber != null">
+				specific_number = #{specificNumber},
+			</if>
+			<if test="isJump != null">
+				is_jump = #{isJump},
+			</if>
+			<if test="jumpUrl != null">
+				jump_url = #{jumpUrl},
+			</if>
+			<if test="sortId != null">
+				sort_id = #{sortId},
+			</if>
+		</set>
+		where news_id = #{newsId}
+	</update>
+	
+	<update id="updateNewsCount" parameterType="Integer">
+		update tbl_news
+		<set>
+			news_count = news_count + 1
+		</set>
+		where news_id = #{newsId}
+	</update>
+	
+	<delete id="deleteNews" parameterType="Integer">
+		delete from tbl_news where news_id = #{newsId}
+	</delete>
+	
+	<resultMap id="NewsTypeMap" type="NewsType">
+		<id property="typeId"  column="type_id" />
+		<result property="typeName"  column="type_name" />
+		<result property="typePid"  column="type_pid" />
+		<result property="typeUrl"  column="type_url" />
+		<result property="isNavigation"  column="is_navigation" />
+		<result property="isNext"  column="is_next" />
+	</resultMap>
+	
+	<select id="findNewsTypeList" parameterType="Map" resultMap="NewsTypeMap">
+		select * from tbl_news_type
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="findNewsTypeCount" resultType="Integer" parameterType="Map">
+		select count(*) from tbl_news_type
+	</select>
+	
+	<select id="findNewsTypeById" parameterType="Integer" resultMap="NewsTypeMap">
+		select * from tbl_news_type where type_id = #{typeId}
+	</select>
+
+	<select id="findNewsTypeListByPid" parameterType="Integer" resultMap="NewsTypeMap">
+		select * from tbl_news_type where type_pid = #{typePid}
+	</select>
+	
+	<insert id="addNewsType" parameterType="NewsType">
+		insert into tbl_news_type (type_name, type_pid, type_url, is_navigation, is_next) 
+		values(#{typeName}, #{typePid}, #{typeUrl}, #{isNavigation}, #{isNext})
+	</insert>
+
+	<update id="updateNewsType" parameterType="NewsType">
+		update tbl_news_type
+		<set>
+			<if test="typeName != null">
+				type_name = #{typeName},
+			</if>
+			<if test="typePid != null">
+				type_pid = #{typePid},
+			</if>
+			<if test="typeUrl != null">
+				type_url = #{typeUrl},
+			</if>
+			<if test="isNavigation != null">
+				is_navigation = #{isNavigation},
+			</if>
+			<if test="isNext != null">
+				is_next = #{isNext},
+			</if>
+		</set>
+		where type_id = #{typeId}
+	</update>
+	
+	<delete id="deleteNewsType" parameterType="Integer">
+		delete from tbl_news_type where type_id = #{typeId}
+	</delete>
+	
+</mapper> 

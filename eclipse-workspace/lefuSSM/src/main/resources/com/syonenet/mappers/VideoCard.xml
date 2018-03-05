@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.VideoCardDao">
+
+	<resultMap id="VideoCardMap" type="VideoCard">
+		<id property="id" column="id" />
+		<result property="type"  column="type" />
+		<result property="agency_price"  column="agency_price" />
+		<result property="jingdong_price"  column="jingdong_price" />
+		<result property="tianmao_price"  column="tianmao_price" />
+		<result property="Cdian_price"  column="Cdian_price" />
+		<result property="core_clock"  column="core_clock" />
+		<result property="memory_clock"  column="memory_clock" />
+		<result property="SP_amount"  column="SP_amount" />
+		<result property="video_memory_size"  column="video_memory_size" />
+		<result property="bit_width"  column="bit_width" />
+		<result property="output_interface"  column="output_interface" />
+		<result property="power_consumption"  column="power_consumption" />
+		<result property="slot"  column="slot" />
+		<result property="PCB_dimension"  column="PCB_dimension" />
+		<result property="card_dimension"  column="card_dimension" />
+		<result property="amount_per_box"  column="amount_per_box" />
+		<result property="cooling_solution"  column="cooling_solution" />
+		<result property="illustrate"  column="illustrate" />
+		<result property="video_core"  column="video_core" />
+		<result property="picture_url1"  column="picture_url1" />
+		<result property="picture_name1"  column="picture_name1" />
+		<result property="state"  column="state" />
+		<result property="add_time"  column="add_time" />
+		<!-- 分类 -->
+		<result property="one_level_id"  column="one_level_id" />
+		<result property="one_level_name"  column="one_level_name" />
+		<result property="two_level_id"  column="two_level_id" />
+		<result property="two_level_name"  column="type_name" />
+	</resultMap>
+
+	<select id="findVideoCardList" parameterType="Map" resultMap="VideoCardMap">
+		select * from bg_video_card 
+		JOIN one_level ON bg_video_card.one_level_id=one_level.one_level_id
+		JOIN tbl_news_type ON bg_video_card.two_level_id=tbl_news_type.type_id
+		where 1 = 1
+		<if test="id != null and id != ''">and id = #{id}</if>
+		<if test="type != null and type != ''">and type = #{type}</if>
+		<if test="agency_price != null and agency_price != ''">and agency_price = #{agency_price}</if><!-- 价格条件 -->
+		<if test="price1 != null and price2 != null">and agency_price between #{price1} and #{price2}</if>
+		<if test="jingdong_price != null and jingdong_price != ''">and jingdong_price = #{jingdong_price}</if>
+		<if test="tianmao_price != null and tianmao_price != ''">and tianmao_price = #{tianmao_price}</if>
+		<if test="Cdian_price != null and Cdian_price != ''">and Cdian_price = #{Cdian_price}</if>
+		<if test="core_clock != null and core_clock != ''">and core_clock = #{core_clock}</if>
+		<if test="memory_clock != null and memory_clock != ''">and memory_clock = #{memory_clock}</if>
+		<if test="SP_amount != null and SP_amount != ''">and SP_amount = #{SP_amount}</if>
+		<if test="video_memory_size != null and video_memory_size != ''">and video_memory_size like concat('%',#{video_memory_size},'%')</if>
+		<if test="bit_width != null and bit_width != ''">and bit_width = #{bit_width}</if>
+		<if test="output_interface != null and output_interface != ''">and output_interface = #{output_interface}</if>
+		<if test="power_consumption != null and power_consumption != ''">and power_consumption = #{power_consumption}</if>
+		<if test="slot != null and slot != ''">and slot = #{slot}</if>
+		<if test="PCB_dimension != null and PCB_dimension != ''">and PCB_dimension = #{PCB_dimension}</if>
+		<if test="card_dimension != null and card_dimension != ''">and card_dimension = #{card_dimension}</if>
+		<if test="amount_per_box != null and amount_per_box != ''">and amount_per_box = #{amount_per_box}</if>
+		<if test="cooling_solution != null and cooling_solution != ''">and cooling_solution = #{cooling_solution}</if>
+		<if test="illustrate != null and illustrate != ''">and illustrate = #{illustrate}</if>
+		<if test="video_core != null and video_core != ''">and video_core like concat('%',#{video_core},'%')</if>
+		<if test="picture_url1 != null and picture_url1 != ''">and picture_url1 = #{picture_url1}</if>
+		<if test="picture_name1 != null and picture_name1 != ''">and picture_name1 = #{picture_name1}</if>
+		<if test="state != null and state != ''">and state = #{state}</if>
+		<if test="add_time != null">and add_time = #{add_time}</if>	
+		<if test="one_level_id != null and one_level_id != ''">and one_level_id = #{one_level_id}</if>
+		<if test="two_level_id != null and two_level_id != ''">and two_level_id = #{two_level_id}</if>
+		<if test="price1 != null and price2 != null">and agency_price between #{price1} and #{price2}</if>
+		<!-- 模糊查询 -->
+		<if test="conditionsall != null and conditionsall != ''">
+			and type like concat('%',#{conditionsall},'%')
+			or agency_price like concat('%',#{conditionsall},'%')
+			or illustrate like concat('%',#{conditionsall},'%')	
+			or (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}) like concat('%',#{conditionsall},'%')		
+			or (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}) like concat('%',#{conditionsall},'%')
+		</if>
+		<!-- 排序 -->
+		order by 
+		<if test='sortingid == "diminishing"'>id DESC</if><!-- 升序排列 -->
+		<if test='sortingall == "diminishing"'>agency_price ASC,add_time DESC</if><!-- 升序排列 -->
+		<if test='sortingadd_time == "diminishing"'>add_time DESC</if><!-- 降序排列 -->
+		<if test='sortingagency_price == "increasing"'>agency_price ASC</if><!-- 升序排列 -->
+		<if test='sortingagency_price == "diminishing"'>agency_price DESC</if><!-- 降序排列 -->
+		<if test="start != null and size != null">limit #{start}, #{size}</if>
+	</select>
+	
+	
+	<select id="findVideoCardCount" parameterType="Map" resultType="Integer">
+		select count(*) from bg_video_card where 1 = 1
+		<if test="id != null and id != ''">and id = #{id}</if>
+		<if test="type != null and type != ''">and type = #{type}</if>
+		<if test="agency_price != null and agency_price != ''">and agency_price = #{agency_price}</if>
+		<if test="price1 != null and price2 != null">and agency_price between #{price1} and #{price2}</if><!-- 价格条件 -->
+		<if test="jingdong_price != null and jingdong_price != ''">and jingdong_price = #{jingdong_price}</if>
+		<if test="tianmao_price != null and tianmao_price != ''">and tianmao_price = #{tianmao_price}</if>
+		<if test="Cdian_price != null and Cdian_price != ''">and Cdian_price = #{Cdian_price}</if>
+		<if test="core_clock != null and core_clock != ''">and core_clock = #{core_clock}</if>
+		<if test="memory_clock != null and memory_clock != ''">and memory_clock = #{memory_clock}</if>
+		<if test="SP_amount != null and SP_amount != ''">and SP_amount = #{SP_amount}</if>
+		<if test="video_memory_size != null and video_memory_size != ''">and video_memory_size = #{video_memory_size}</if>
+		<if test="bit_width != null and bit_width != ''">and bit_width = #{bit_width}</if>
+		<if test="output_interface != null and output_interface != ''">and output_interface = #{output_interface}</if>
+		<if test="power_consumption != null and power_consumption != ''">and power_consumption = #{power_consumption}</if>
+		<if test="slot != null and slot != ''">and slot = #{slot}</if>
+		<if test="PCB_dimension != null and PCB_dimension != ''">and PCB_dimension = #{PCB_dimension}</if>
+		<if test="card_dimension != null and card_dimension != ''">and card_dimension = #{card_dimension}</if>
+		<if test="amount_per_box != null and amount_per_box != ''">and amount_per_box = #{amount_per_box}</if>
+		<if test="cooling_solution != null and cooling_solution != ''">and cooling_solution = #{cooling_solution}</if>
+		<if test="illustrate != null and illustrate != ''">and illustrate = #{illustrate}</if>
+		<if test="video_core != null and video_core != ''">and video_core = #{video_core}</if>
+		<if test="picture_url1 != null and picture_url1 != ''">and picture_url1 = #{picture_url1}</if>
+		<if test="picture_name1 != null and picture_name1 != ''">and picture_name1 = #{picture_name1}</if>
+		<if test="state != null and state != ''">and state = #{state}</if>
+		<if test="add_time != null">and add_time = #{add_time}</if>	
+		<if test="one_level_id != null and one_level_id != ''">and one_level_id = #{one_level_id}</if>
+		<if test="two_level_id != null and two_level_id != ''">and two_level_id = #{two_level_id}</if>
+		<!-- 模糊查询 -->
+		<if test="conditionsall != null and conditionsall != ''">
+			and type like concat('%',#{conditionsall},'%')
+			or agency_price like concat('%',#{conditionsall},'%')
+			or illustrate like concat('%',#{conditionsall},'%')	
+			or (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}) like concat('%',#{conditionsall},'%')		
+			or (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}) like concat('%',#{conditionsall},'%')
+		</if>
+	</select>
+	
+	
+	<update id="updateVideoCard" parameterType="VideoCard">
+		update bg_video_card
+		<set>
+			<if test="type != null and type != ''">type = #{type},</if>
+			<if test="agency_price != null and agency_price != ''">agency_price = #{agency_price},</if>
+			<if test="jingdong_price != null and jingdong_price != ''">jingdong_price = #{jingdong_price},</if>
+			<if test="tianmao_price != null and tianmao_price != ''">tianmao_price = #{tianmao_price},</if>
+			<if test="Cdian_price != null and Cdian_price != ''">Cdian_price = #{Cdian_price},</if>
+			<if test="core_clock != null and core_clock != ''">core_clock = #{core_clock},</if>
+			<if test="memory_clock != null and memory_clock != ''">memory_clock = #{memory_clock},</if>
+			<if test="SP_amount != null and SP_amount != ''">SP_amount = #{SP_amount},</if>
+			<if test="video_memory_size != null and video_memory_size != ''">video_memory_size = #{video_memory_size},</if>
+			<if test="bit_width != null and bit_width != ''">bit_width = #{bit_width},</if>
+			<if test="output_interface != null and output_interface != ''">output_interface = #{output_interface},</if>
+			<if test="power_consumption != null and power_consumption != ''">power_consumption = #{power_consumption},</if>
+			<if test="slot != null and slot != ''">slot = #{slot},</if>
+			<if test="PCB_dimension != null and PCB_dimension != ''">PCB_dimension = #{PCB_dimension},</if>
+			<if test="card_dimension != null and card_dimension != ''">card_dimension = #{card_dimension},</if>
+			<if test="amount_per_box != null and amount_per_box != ''">amount_per_box = #{amount_per_box},</if>
+			<if test="cooling_solution != null and cooling_solution != ''">cooling_solution = #{cooling_solution},</if>
+			<if test="illustrate != null and illustrate != ''">illustrate = #{illustrate},</if>
+			<if test="video_core != null and video_core != ''">video_core = #{video_core},</if>
+			<if test="picture_url1 != null and picture_url1 != ''">picture_url1 = #{picture_url1},</if>
+			<if test="picture_name1 != null and picture_name1 != ''">picture_name1 = #{picture_name1},</if>
+			<if test="state != null and state != ''">state = #{state},</if>
+			<if test="add_time != null">add_time = #{add_time},</if>	
+			<!-- 分类 -->
+			<if test="one_level_id != null and one_level_id != ''">
+				one_level_id = #{one_level_id},
+				<!-- one_level_name = (SELECT one_level_name FROM one_level WHERE one_level_id=#{one_level_id}), -->
+			</if>
+			<if test="two_level_id != null and two_level_id != ''">
+				two_level_id = #{two_level_id},
+				<!-- two_level_name = (SELECT two_level_name FROM two_level WHERE two_level_id=#{two_level_id}), -->
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+		
+	
+	<delete id="deleteVideoCard" parameterType="Integer">
+		delete from bg_video_card where id = #{id}
+	</delete>
+	
+		
+	<insert id="addVideoCard" parameterType="VideoCard" useGeneratedKeys="true" keyProperty="id">
+		insert into bg_video_card
+			  (  id,   type,   agency_price,   jingdong_price,	 tianmao_price,	  Cdian_price,	 core_clock,   memory_clock,   SP_amount,   video_memory_size,   bit_width,	  output_interface,	  power_consumption,   slot,   PCB_dimension,   card_dimension,   amount_per_box,   cooling_solution,   illustrate,   video_core,   picture_url1,   picture_name1,   state,   add_time,   one_level_id,   two_level_id)
+		values(#{id},#{type},#{agency_price},#{jingdong_price},#{tianmao_price},#{Cdian_price},#{core_clock},#{memory_clock},#{SP_amount},#{video_memory_size},#{bit_width},#{output_interface},#{power_consumption},#{slot},#{PCB_dimension},#{card_dimension},#{amount_per_box},#{cooling_solution},#{illustrate},#{video_core},#{picture_url1},#{picture_name1},#{state},#{add_time},#{one_level_id},#{two_level_id})
+	</insert>
+</mapper> 

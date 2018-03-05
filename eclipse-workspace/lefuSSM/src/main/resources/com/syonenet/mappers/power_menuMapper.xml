@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.power_menuMapper">
+  <resultMap id="power_menu" type="power_menu">
+    <result column="menu_id" jdbcType="INTEGER" property="menuId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="menu_url" jdbcType="VARCHAR" property="menuUrl" />
+    <result column="menu_pid" jdbcType="INTEGER" property="menuPid" />
+  </resultMap>
+  <insert id="insert" parameterType="com.syonenet.entity.power_menu">
+    insert into power_menu (menu_id, menu_name, menu_url, 
+      menu_pid)
+    values (#{menuId,jdbcType=INTEGER}, #{menuName,jdbcType=VARCHAR}, #{menuUrl,jdbcType=VARCHAR}, 
+      #{menuPid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="power_menu">
+    insert into power_menu
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="menuId != null">
+        menu_id,
+      </if>
+      <if test="menuName != null">
+        menu_name,
+      </if>
+      <if test="menuUrl != null">
+        menu_url,
+      </if>
+      <if test="menuPid != null">
+        menu_pid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="menuId != null">
+        #{menuId,jdbcType=INTEGER},
+      </if>
+      <if test="menuName != null">
+        #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="menuUrl != null">
+        #{menuUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="menuPid != null">
+        #{menuPid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="powerMenuList" parameterType="Map" resultType="power_menu">
+	select * from power_menu where 1 = 1
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+	<if test="rightId != null and rightId != ''">and role_id = #{rightId}</if>
+	<!-- 模糊查询 -->
+	<if test="conditionsall != null and conditionsall != ''">
+		and roleId like concat('%',#{conditionsall},'%')
+		or rightId like concat('%',#{conditionsall},'%')
+	</if>
+  </select>
+</mapper>

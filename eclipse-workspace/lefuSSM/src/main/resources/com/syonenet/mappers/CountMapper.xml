@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.CountDao">
+
+	<resultMap id="CountMap" type="Count">
+		<id property="countId" column="count_id" />
+		<result property="countDay"  column="count_day" />
+		<result property="countTotal"  column="count_total" />
+	</resultMap>
+	
+	<select id="findCountById" resultMap="CountMap">
+		select * from tbl_count where count_id = 1
+	</select>
+	
+	<update id="updateCount" parameterType="Count">
+		update tbl_count
+			<set>
+				<if test="countDay !=null and countDay !='' ">
+					count_day = #{countDay},
+				</if>
+				<if test="countTotal !=null and countTotal !='' ">
+					count_total = #{countTotal},
+				</if>
+			</set>
+		where count_id = #{countId}
+	</update>
+
+</mapper> 

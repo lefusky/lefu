@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syonenet.dao.MessageDao">
+
+	<resultMap id="MessageMap" type="Message">
+		<id property="messageId" column="message_id" />
+		<result property="messageQuestion"  column="message_question" />
+		<result property="messageAnswer" column="message_answer" />
+		<result property="messageCount" column="message_count" />
+		<result property="addTime" column="add_time" />
+		<result property="userId" column="user_id" />
+		<result property="userNick" column="user_nick" />
+		<result property="departmentId" column="department_id" />
+		<result property="statusId" column="status_id" />
+		<result property="topId" column="top_id" />
+	</resultMap>
+	
+	<select id="findMessageList" parameterType="Map" resultMap="MessageMap">
+		select * from tbl_message where 1 = 1
+		<if test="userId != null and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+		<if test="statusId != null and statusId != ''">
+			and status_id = #{statusId}
+		</if>
+		order by message_id desc
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="findMessageCount" parameterType="Map" resultType="Integer">
+		select count(*) from tbl_message where 1 = 1
+		<if test="userId != null and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+	</select>
+	
+	<select id="findMessageById" parameterType="Integer" resultMap="MessageMap">
+		select * from tbl_message where message_id = #{messageId}
+	</select>
+	
+	<select id="findMessageByCondition" parameterType="Map" resultMap="MessageMap">
+		select * from tbl_message where 1 = 1
+		<if test="messageId != null">
+			and message_id = #{messageId}
+		</if>
+		<if test="userId != null">
+			and uesr_id = #{userId}
+		</if>
+		<if test="departmentList != null">
+			and department_id in
+			<foreach collection="departmentList" item="department" index="index" open="("  separator="," close=")">  
+				(#{department.departmentId})  
+			</foreach> 
+		</if>
+	</select>
+	
+	<insert id="addMessage" parameterType="Message">
+		insert into tbl_message (message_question, message_answer, add_time, user_id, user_nick, department_id, status_id, top_id) 
+		values(#{messageQuestion}, #{messageAnswer}, #{addTime}, #{userId}, #{userNick}, #{departmentId}, #{statusId}, #{topId})
+	</insert>
+	
+	<update id="updateMessage" parameterType="Message">
+		update tbl_message
+		<set>
+			<if test="messageQuestion != null">
+				message_question = #{messageQuestion},
+			</if>
+			<if test="messageAnswer != null">
+				message_answer = #{messageAnswer},
+			</if>
+			<if test="statusId != null">
+				status_id = #{statusId},
+			</if>
+			<if test="topId != null">
+				top_id = #{topId},
+			</if>
+		</set>
+		where message_id = #{messageId}
+	</update>
+	
+	<update id="updateMessageCount" parameterType="Integer">
+		update tbl_message
+		<set>
+			message_count = message_count + 1
+		</set>
+		where message_id = #{messageId}
+	</update>
+	
+	<delete id="deleteMessage" parameterType="Integer">
+		delete from tbl_message where message_id = #{messageId}
+	</delete>
+
+</mapper> 

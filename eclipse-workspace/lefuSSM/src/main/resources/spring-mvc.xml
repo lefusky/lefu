@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 定时任务 -->
+	<task:annotation-driven/>    
+    <context:component-scan base-package="com.syonenet.quartz"/>  
+    <context:annotation-config/>
+    
+	<!-- 扫描包： base-package:扫描路径，use-default-filters:不使用默认过滤器 -->
+	<context:component-scan base-package="com.syonenet" use-default-filters="false">
+		<!-- 只扫描控制器：只含有Controller注解的 -->
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- 配置视图解析器，返回页面 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="maxUploadSize" value="10240000" />
+	</bean>
+	
+	<!-- 标准配置：将springmvc不能处理的请求交给tomcat（动态静态都能成功访问） -->
+	<mvc:default-servlet-handler></mvc:default-servlet-handler>
+	<!-- 标准配置：能支持springmvc更高级的一些功能（JSR303校验，快捷的ajax...映射动态请求） -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+</beans>
